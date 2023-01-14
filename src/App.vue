@@ -3,7 +3,9 @@
     <div v-if="showModal" class="overlay">
       <div class="modal">
         <!-- any change in the textarea is going to change the state newNote in the script and viceversa -->
-        <textarea v-model="newNote" name="note" id="note" cols="30" rows="10"></textarea>
+        <!-- v-model.trim cuts all the white spacing and counts just the characters  -->
+        <textarea v-model.trim="newNote" name="note" id="note" cols="30" rows="10"></textarea>
+        <p class="error" v-if="errorMessage"> {{ errorMessage }}</p>
         <button @click="postNote">Post this note</button>
         <button class="cancel" @click="showModal = false">Cancel</button>
       </div>
@@ -14,13 +16,14 @@
         <button @click="showModal = true">Add note</button>
       </header>
       <div class="cards-container">
-        <div class="card">
-          <p class="main-text">Lorem ipsum dolor sit amet consectetur adipisicing elit. Consequuntur dolor nihil sint quisquam rem suscipit optio magni asperiores corporis ipsa.</p>
-          <p class="date">12/01/2023</p>
-        </div>
-        <div class="card">
-          <p class="main-text">Lorem ipsum dolor sit amet consectetur adipisicing elit. Consequuntur dolor nihil sint quisquam rem suscipit optio magni asperiores corporis ipsa.</p>
-          <p class="date">12/01/2023</p>
+        <!-- use directives v-for (always use with a unique value :key="") to iterate over our array of notes and render them as html elements  -->
+        <div v-for="note in notes" :key="note.id" class="card" :style="{backgroundColor: note.noteColor}">
+          <p class="main-text">{{note.text}}</p>
+          <p class="date">{{ note.date.toLocaleDateString() }}</p>
+          <!-- <div class="delete-update-btn">
+          <button class="updateNote">Update</button>
+          <button class="deleteNote">Delete</button>
+          </div> -->
         </div>
       </div>
     </div>
@@ -29,6 +32,7 @@
 
 <script setup>
   import {ref} from "vue";
+  const errorMessage = ref("") //pass this error with a message in the if of postNote and on p below the textarea with: v-if="errorMessage"> {{ errorMessage }}
   const showModal = ref(false)    //pasar al template en div v-if="showModal", al boton Add @click="showModal = true" y al boton Cancel @click="showModal = false"
   // state binded to the textarea,captures the text area note
   const newNote = ref("")        //pasar al template en textarea v-model="newNote" para que capture el texto
@@ -41,7 +45,14 @@
   }
   // create handler to add note
   const postNote = () => { //se lo pasaamos al overlay button Post note @click="postNote"
-    // push a new object with the properties
+  if(newNote.value.length < 10) {
+    errorMessage.value = "The note needs to be at least 10 characters long"//return early: if less than 10 characters, the app never goes to the push line below and throws an error message
+    setTimeout(() => {
+      errorMessage.value = ""
+    }, 5000);
+    return errorMessage.value
+  }
+  // push a new object with the properties
     notes.value.push({
       // access the value of newNote and push it as a property of the object
       id: Math.floor(Math.random()*1000000),
@@ -55,6 +66,7 @@
     //clears the textarea after publishing
     newNote.value = "" 
   }
+
 </script>
 
 <style scoped>
@@ -89,6 +101,7 @@
     border-radius: 20px;
     color: white;
     font-size: 20px;
+    /* font-weight: bold; */
   }
   .card {
     width: 225px;
@@ -113,7 +126,7 @@
     position: absolute;
     width: 100%;
     height: 100%;
-    background-color: rgba(0,0,0,0.5);
+    background-color: rgba(0,0,0,0.9);
     /* z-index: 10; */
     display: flex;
     align-items: center;
@@ -135,11 +148,29 @@
     border: none;
     border-radius: 15px;
     color: white;
-    background-color: black;
+    background-color: rgb(25, 168, 66);
     cursor:pointer;
     margin: 7px;
   }
   .modal .cancel {
     background-color: rgb(209, 48, 48) ;
   }
+  .error {
+    color: red;
+  }
+  /* .delete-update-btn {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+
+  }
+  .deleteNote, .updateNote {
+    border: none;
+    border-radius: 6px;
+    padding: 4px 7px;
+    background-color: rgb(66, 66, 66);
+    color: white;
+    text-transform: uppercase;
+    font-weight: bold;
+  } */
 </style>
