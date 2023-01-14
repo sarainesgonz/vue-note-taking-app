@@ -4,8 +4,8 @@
       <div class="modal">
         <!-- any change in the textarea is going to change the state newNote in the script and viceversa -->
         <textarea v-model="newNote" name="note" id="note" cols="30" rows="10"></textarea>
-        <button>Post note</button>
-        <button class="close" @click="showModal = false">Close</button>
+        <button @click="postNote">Post this note</button>
+        <button class="cancel" @click="showModal = false">Cancel</button>
       </div>
     </div>
     <div class="container">
@@ -29,19 +29,31 @@
 
 <script setup>
   import {ref} from "vue";
-
-  const showModal = ref(false)    //pasar al template en div v-if="showModal", al boton Add @click="showModal = true" y al boton Close @click="showModal = false"
-  // state binded to the textarea
-  const newNote = ref("")        //pasar al template en textarea v-model="newNote" 
+  const showModal = ref(false)    //pasar al template en div v-if="showModal", al boton Add @click="showModal = true" y al boton Cancel @click="showModal = false"
+  // state binded to the textarea,captures the text area note
+  const newNote = ref("")        //pasar al template en textarea v-model="newNote" para que capture el texto
   // create an array for the notes
   const notes = ref([])
+
+  function getRandomColor() {
+    let color = "hsl("+ Math.random() * 360 +",100%,75%)";
+    return color
+  }
   // create handler to add note
-  const addNote = () => {
-    // push a new object with theproperties
+  const postNote = () => { //se lo pasaamos al overlay button Post note @click="postNote"
+    // push a new object with the properties
     notes.value.push({
       // access the value of newNote and push it as a property of the object
-      text:newNote.value
-    })
+      id: Math.floor(Math.random()*1000000),
+      // text is goin to be the value of the textarea captured into newNote
+      text: newNote.value,
+      date: new Date(),
+      noteColor: getRandomColor()
+    });
+    //closes the overlay after publishing
+    showModal.value = false,
+    //clears the textarea after publishing
+    newNote.value = "" 
   }
 </script>
 
@@ -127,7 +139,7 @@
     cursor:pointer;
     margin: 7px;
   }
-  .modal .close {
+  .modal .cancel {
     background-color: rgb(209, 48, 48) ;
   }
 </style>
