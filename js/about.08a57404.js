@@ -1,0 +1,2 @@
+"use strict";(self["webpackChunknote_app"]=self["webpackChunknote_app"]||[]).push([[443],{4335:function(n,t,a){a.r(t),a.d(t,{default:function(){return f}});var e=a(6252);const u={class:"about"},r=(0,e._)("h1",null,"This is an about page",-1),s=[r];function c(n,t){return(0,e.wg)(),(0,e.iD)("div",u,s)}var o=a(3744);const i={},p=(0,o.Z)(i,[["render",c]]);var f=p}}]);
+//# sourceMappingURL=about.08a57404.js.map
